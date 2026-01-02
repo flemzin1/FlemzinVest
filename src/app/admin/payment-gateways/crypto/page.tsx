@@ -125,52 +125,54 @@ export default function CryptoGatewayPage() {
         </Button>
       </div>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
+        <CardHeader className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="order-2 md:order-1">
             <CardTitle>Cryptocurrency Wallets</CardTitle>
             <CardDescription>Manage your crypto payment addresses.</CardDescription>
           </div>
-           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add New Wallet
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Crypto Wallet</DialogTitle>
-                <DialogDescription>
-                  Enter the details for the new cryptocurrency wallet.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="coin-name" className="text-right">
-                    Coin
-                  </Label>
-                  <Input id="coin-name" value={newCoin} onChange={(e) => setNewCoin(e.target.value)} placeholder="e.g. Litecoin" className="col-span-3" />
+          <div className="order-1 flex w-full justify-end md:order-2 md:w-auto">
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="mr-2 h-4 w-4" /> Add New Wallet
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Crypto Wallet</DialogTitle>
+                  <DialogDescription>
+                    Enter the details for the new cryptocurrency wallet.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="coin-name" className="text-right">
+                      Coin
+                    </Label>
+                    <Input id="coin-name" value={newCoin} onChange={(e) => setNewCoin(e.target.value)} placeholder="e.g. Litecoin" className="col-span-3" />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="network-name" className="text-right">
+                      Network
+                    </Label>
+                    <Input id="network-name" value={newNetwork} onChange={(e) => setNewNetwork(e.target.value)} placeholder="e.g. LTC" className="col-span-3" />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="address" className="text-right">
+                      Address
+                    </Label>
+                    <Input id="address" value={newAddress} onChange={(e) => setNewAddress(e.target.value)} placeholder="Wallet address" className="col-span-3" />
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="network-name" className="text-right">
-                    Network
-                  </Label>
-                  <Input id="network-name" value={newNetwork} onChange={(e) => setNewNetwork(e.target.value)} placeholder="e.g. LTC" className="col-span-3" />
-                </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="address" className="text-right">
-                    Address
-                  </Label>
-                  <Input id="address" value={newAddress} onChange={(e) => setNewAddress(e.target.value)} placeholder="Wallet address" className="col-span-3" />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button type="submit" onClick={handleAddNewGateway}>Save Wallet</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button type="submit" onClick={handleAddNewGateway}>Save Wallet</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
             <div className="space-y-4">
@@ -244,4 +246,3 @@ export default function CryptoGatewayPage() {
     </div>
   );
 }
- 

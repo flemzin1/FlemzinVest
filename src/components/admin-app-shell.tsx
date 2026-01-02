@@ -62,6 +62,13 @@ function AdminHeader({ isAuthenticated }: { isAuthenticated: boolean }) {
 
     const checkActivePath = (href: string) => {
         if (!mounted) return false;
+        
+        if (href === "/admin/finance") {
+            return pathname.startsWith("/admin/finance") || 
+                   pathname.startsWith("/admin/payment-gateways") || 
+                   pathname.startsWith("/admin/investment-services");
+        }
+        
         return pathname.startsWith(href);
     }
 
@@ -136,12 +143,19 @@ function AdminMobileBottomNav() {
 
     const checkActivePath = (href: string) => {
         if (!mounted) return false;
+        
+        if (href === "/admin/finance") {
+            return pathname.startsWith("/admin/finance") || 
+                   pathname.startsWith("/admin/payment-gateways") || 
+                   pathname.startsWith("/admin/investment-services");
+        }
+
         if (href === "/admin/dashboard") return pathname === href;
         return pathname.startsWith(href);
     };
 
     return (
-        <div className="fixed bottom-0 left-0 z-50 w-full h-24 bg-background border-t md:hidden">
+        <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background border-t md:hidden">
             <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
                 {mobileMenuItems.map((item) => {
                     const isActive = checkActivePath(item.href);
@@ -151,14 +165,14 @@ function AdminMobileBottomNav() {
                           href={item.href}
                           key={item.label}
                           className={cn(
-                            "flex flex-col items-center justify-center pt-2 group"
+                            "flex flex-col items-center justify-center group"
                            )}
                         >
                           <div
                             className={cn(
-                              "relative flex flex-col items-center justify-center transition-all duration-300 w-24 h-24 p-2",
+                              "relative flex flex-col items-center justify-center transition-all duration-300 w-20 h-20 p-2",
                               isActive
-                                ? "-translate-y-12 bg-accent text-accent-foreground rounded-full shadow-[0_-8px_20px_-5px_hsl(var(--accent)/0.5)]"
+                                ? "-translate-y-8 bg-accent text-accent-foreground rounded-full shadow-[0_-8px_20px_-5px_hsl(var(--accent)/0.5)]"
                                 : "text-muted-foreground group-hover:text-foreground"
                             )}
                           >
@@ -206,7 +220,7 @@ export function AdminAppShell({ children }: { children: React.ReactNode }) {
            <main className="flex-1 pt-16 pb-24 md:pb-0">
              {/* Optional: Add a loading spinner */}
            </main>
-           <div className="fixed bottom-0 left-0 z-50 w-full h-24 bg-background border-t md:hidden" />
+           <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background border-t md:hidden" />
          </div>
        );
     }

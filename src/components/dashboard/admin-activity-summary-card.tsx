@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { newUsers, newInvestments, totalCapital, totalPayout } from "@/lib/data";
 import { BarChart2 } from "lucide-react";
@@ -13,22 +14,22 @@ export function AdminActivitySummaryCard() {
         <BarChart2 className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent className="pt-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-center">
             <div>
-                <p className="text-sm text-muted-foreground">New Users</p>
-                <p className="text-2xl font-bold">{formatNumber(newUsers)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">New Users</p>
+                <p className="text-lg sm:text-2xl font-bold">{formatNumber(newUsers)}</p>
             </div>
             <div>
-                <p className="text-sm text-muted-foreground">New Investments</p>
-                <p className="text-2xl font-bold">{formatNumber(newInvestments)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">New Investments</p>
+                <p className="text-lg sm:text-2xl font-bold">{formatNumber(newInvestments)}</p>
             </div>
             <div>
-                <p className="text-sm text-muted-foreground">Total Capital</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalCapital)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Capital</p>
+                <p className="text-lg sm:text-2xl font-bold">{formatCurrency(totalCapital)}</p>
             </div>
              <div>
-                <p className="text-sm text-muted-foreground">Total Payout</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalPayout)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Payout</p>
+                <p className="text-lg sm:text-2xl font-bold">{formatCurrency(totalPayout)}</p>
             </div>
         </div>
       </CardContent>

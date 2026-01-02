@@ -53,41 +53,43 @@ export default function PaymentGatewaysPage() {
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
+        <CardHeader className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="md:order-1 order-2">
             <CardTitle>Payment Gateways</CardTitle>
             <CardDescription>Select a payment method to manage its settings.</CardDescription>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add New Gateway
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Gateway Type</DialogTitle>
-                <DialogDescription>
-                  Add a new payment method category to the platform.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="gateway-name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="gateway-name"
-                    placeholder="e.g. Skrill"
-                    className="col-span-3"
-                  />
+          <div className="md:order-2 order-1 w-full md:w-auto flex justify-end">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="mr-2 h-4 w-4" /> Add New Gateway
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Gateway Type</DialogTitle>
+                  <DialogDescription>
+                    Add a new payment method category to the platform.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="gateway-name" className="text-right">
+                      Name
+                    </Label>
+                    <Input
+                      id="gateway-name"
+                      placeholder="e.g. Skrill"
+                      className="col-span-3"
+                    />
+                  </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" onClick={handleAddGateway}>Save Gateway</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button type="submit" onClick={handleAddGateway}>Save Gateway</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
             {paymentMethods.map((method) => (

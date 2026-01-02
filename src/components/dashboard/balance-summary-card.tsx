@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
-export function BalanceSummaryCard({ showAddMoneyButton = true }: { showAddMoneyButton?: boolean }) {
+export function BalanceSummaryCard({ showAddMoneyButton = true, transactionHistoryHref = "/transactions" }: { showAddMoneyButton?: boolean, transactionHistoryHref?: string }) {
   const [isVisible, setIsVisible] = useState(true);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -24,38 +24,37 @@ export function BalanceSummaryCard({ showAddMoneyButton = true }: { showAddMoney
         <Wallet className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="flex items-start justify-between mt-4">
+        <div className="flex flex-row items-start justify-between mt-4 gap-4">
           <Collapsible>
-            <div className="flex items-center gap-4">
-                <CollapsibleTrigger asChild>
-                    <div className="flex items-center gap-2 cursor-pointer group">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Available Balance</p>
-                            <p className="text-2xl font-bold">{isVisible ? formatCurrency(availableBalance) : '****.**'}</p>
-                        </div>
-                        <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-                    </div>
-                </CollapsibleTrigger>
-
-                <Button variant="ghost" size="icon" onClick={toggleVisibility} className="self-end mb-1">
-                    {isVisible ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-muted-foreground">Available Balance</p>
+                <Button variant="ghost" size="icon" onClick={toggleVisibility} className="h-6 w-6">
+                    {isVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                     <span className="sr-only">{isVisible ? 'Hide balances' : 'Show balances'}</span>
                 </Button>
+              </div>
+              <CollapsibleTrigger asChild>
+                <div className="flex items-center gap-2 cursor-pointer group">
+                  <p className="text-xl sm:text-2xl font-bold">{isVisible ? formatCurrency(availableBalance) : '****.**'}</p>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                </div>
+              </CollapsibleTrigger>
             </div>
             <CollapsibleContent className="pt-4">
                 <div className="pl-1">
                     <p className="text-xs text-muted-foreground">Total Balance</p>
-                    <p className="text-lg font-semibold">{isVisible ? formatCurrency(totalBalance) : '****.**'}</p>
+                    <p className="text-base sm:text-lg font-semibold">{isVisible ? formatCurrency(totalBalance) : '****.**'}</p>
                 </div>
             </CollapsibleContent>
           </Collapsible>
           
           <div className="flex flex-col gap-2">
-            <Button asChild variant="outline">
-              <Link href="/transactions">Transaction History</Link>
+            <Button asChild variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Link href={transactionHistoryHref}>Transaction History</Link>
             </Button>
             {showAddMoneyButton && (
-                <Button asChild>
+                <Button asChild size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                     <Link href="/deposit">Add Money</Link>
                 </Button>
             )}

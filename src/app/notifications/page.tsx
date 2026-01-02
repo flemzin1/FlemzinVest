@@ -25,12 +25,12 @@ export default function NotificationsPage() {
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <CardTitle>Notifications</CardTitle>
             <CardDescription>You have {unreadCount} unread messages.</CardDescription>
           </div>
-          <Button onClick={markAllAsRead} disabled={unreadCount === 0}>
+          <Button onClick={markAllAsRead} disabled={unreadCount === 0} className="w-full md:w-auto">
             <MailOpen className="mr-2 h-4 w-4" />
             Mark all as read
           </Button>
@@ -45,6 +45,7 @@ export default function NotificationsPage() {
                       "flex items-start gap-4 rounded-lg border p-4 text-left text-sm transition-all hover:bg-secondary/50 cursor-pointer",
                       !notification.read && "bg-secondary"
                     )}
+                    onClick={() => !notification.read && markAsRead(notification.id)}
                   >
                     <div className="flex-1 space-y-1">
                       <p className="font-medium">{notification.title}</p>
@@ -58,7 +59,7 @@ export default function NotificationsPage() {
                         notification.read ? "text-muted-foreground cursor-default" : "text-primary hover:text-primary"
                       )}
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent dialog from opening
+                        e.stopPropagation(); // Prevent dialog from opening twice
                         if (!notification.read) {
                           markAsRead(notification.id);
                         }

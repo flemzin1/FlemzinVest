@@ -1,7 +1,8 @@
 import { BarChart3, Twitter, Linkedin, Facebook } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
     const productLinks = [
         { name: "Offers", href: "/offers" },
         { name: "How It Works", href: "/#how-it-works" },
@@ -25,7 +26,7 @@ export function Footer() {
 
 
     return (
-        <footer className="border-t bg-background w-full px-4 sm:px-6">
+        <footer className={cn("border-t bg-background w-full px-4 sm:px-6", className)}>
             <div className="container mx-auto py-12 md:py-16">
                 <div className="grid gap-12 lg:grid-cols-12">
                     {/* Brand & Description */}

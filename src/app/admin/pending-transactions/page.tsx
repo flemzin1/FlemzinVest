@@ -21,7 +21,7 @@ export default function PendingTransactionsPage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid h-auto w-full grid-cols-2 md:grid-cols-4">
               <TabsTrigger value="all">All ({allPending.length})</TabsTrigger>
               <TabsTrigger value="deposits">Deposits ({pendingDeposits.length})</TabsTrigger>
               <TabsTrigger value="withdrawals">Withdrawals ({pendingWithdrawals.length})</TabsTrigger>

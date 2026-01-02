@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
           <p className="text-muted-foreground mt-2">An overview of platform activity.</p>
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
-        <BalanceSummaryCard showAddMoneyButton={false} />
+        <BalanceSummaryCard showAddMoneyButton={false} transactionHistoryHref="/admin/transactions" />
         <ActivitySummaryCard />
       </div>
       <div className="grid grid-cols-1 gap-4 md:gap-8">

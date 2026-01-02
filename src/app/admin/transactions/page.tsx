@@ -65,7 +65,7 @@ function TransactionTable({ transactions }: { transactions: Transaction[] }) {
   );
 }
 
-export default function TransactionsPage() {
+export default function AdminTransactionsPage() {
   const deposits = transactionHistory.filter(tx => tx.type === 'Deposit');
   const withdrawals = transactionHistory.filter(tx => tx.type === 'Withdrawal');
   const investments = transactionHistory.filter(tx => tx.type === 'Investment');
@@ -74,8 +74,8 @@ export default function TransactionsPage() {
     <div className="flex-1 space-y-8 p-4 md:p-8">
       <Card>
         <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
-          <CardDescription>A record of your recent account activity.</CardDescription>
+          <CardTitle>All Transactions</CardTitle>
+          <CardDescription>A record of all platform activity.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all">

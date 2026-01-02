@@ -99,14 +99,16 @@ export default function InvestmentServicesPage() {
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
+        <CardHeader className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="order-2 md:order-1">
             <CardTitle>Investment Services</CardTitle>
             <CardDescription>Configure investment plans and offerings.</CardDescription>
           </div>
-          <Button onClick={handleAddNew}>
-            <Plus className="mr-2 h-4 w-4" /> Add New Offer
-          </Button>
+          <div className="order-1 flex w-full justify-end md:order-2 md:w-auto">
+            <Button onClick={handleAddNew} size="sm">
+              <Plus className="mr-2 h-4 w-4" /> Add New Offer
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
             {plans.map((plan) => (

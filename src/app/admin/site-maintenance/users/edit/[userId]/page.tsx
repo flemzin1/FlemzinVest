@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -149,7 +150,7 @@ export default function EditUserPage() {
         </Button>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-8">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -235,7 +236,7 @@ export default function EditUserPage() {
                 <CardContent>
                     <Label htmlFor="balance">Total Balance (USD)</Label>
                     {isBalanceEditing ? (
-                        <Input id="balance" type="number" value={balance} onChange={(e) => setBalance(parseFloat(e.target.value))} className="h-12 text-xl font-bold" />
+                        <Input id="balance" type="number" value={balance} onChange={(e) => setBalance(parseFloat(e.target.value))} className="h-12 text-base sm:text-xl font-bold" />
                     ) : (
                         <p className="text-3xl font-bold">{formatCurrency(balance)}</p>
                     )}
@@ -248,18 +249,20 @@ export default function EditUserPage() {
                 )}
             </Card>
             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
+                <CardHeader className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+                    <div className="order-2 md:order-1">
                         <CardTitle>Transaction History</CardTitle>
                         <CardDescription>A log of the user&apos;s financial activities.</CardDescription>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleAddNewTx}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Transaction
-                    </Button>
+                    <div className="order-1 flex w-full justify-end md:order-2 md:w-auto">
+                        <Button variant="outline" size="sm" onClick={handleAddNewTx}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add Transaction
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                   <div className="rounded-lg border">
+                    <div className="overflow-x-auto rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -379,6 +382,4 @@ export default function EditUserPage() {
   );
 }
 
-    
 
-    
