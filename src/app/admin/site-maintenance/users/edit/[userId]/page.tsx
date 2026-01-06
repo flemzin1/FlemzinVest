@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { ArrowLeft, Edit, Save, X, User as UserIcon, PlusCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { ArrowLeft, Edit, Save, PlusCircle, Globe } from "lucide-react";
 import Link from "next/link";
-import { users as allUsers, transactionHistory as allTransactions, type User, type Transaction } from "@/lib/data";
+import { users as allUsers, type User, type Transaction } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
@@ -25,6 +25,7 @@ const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style
 const getStatusVariant = (status: Transaction['status'] | User['status']) => {
   switch (status) {
     case 'Completed':
+    case 'Profit':
     case 'Active':
       return 'secondary';
     case 'Pending':
@@ -44,23 +45,30 @@ export default function EditUserPage() {
 
   const user = allUsers.find(u => u.id === userId);
   
-  const [userTransactions, setUserTransactions] = useState<Transaction[]>(
-    allTransactions.filter(tx => tx.details.includes(user?.name || ''))
-  );
-  
+  const [userTransactions, setUserTransactions] = useState<Transaction[]>([]);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [isBalanceEditing, setIsBalanceEditing] = useState(false);
   
-  const [name, setName] = useState(user?.name || "");
-  const [username, setUsername] = useState(user?.username || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [balance, setBalance] = useState(user?.totalBalance || 0);
-  const [status, setStatus] = useState(user?.status || "Pending");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [balance, setBalance] = useState(0);
+  const [status, setStatus] = useState<User['status']>("Pending");
   
-  // State for transaction dialog
   const [isTxDialogOpen, setIsTxDialogOpen] = useState(false);
   const [isEditingTx, setIsEditingTx] = useState(false);
   const [currentTx, setCurrentTx] = useState<Transaction | Partial<Transaction> | null>(null);
+
+  useEffect(() => {
+    if (user) {
+        setUserTransactions(user.transactions);
+        setName(user.name);
+        setUsername(user.username);
+        setEmail(user.email);
+        setBalance(user.totalBalance);
+        setStatus(user.status);
+    }
+  }, [user]);
 
 
   if (!user) {
@@ -154,7 +162,7 @@ export default function EditUserPage() {
         <div className="lg:col-span-1 space-y-8">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="flex items-center gap-2"><UserIcon className="h-5 w-5" /> User Profile</CardTitle>
+                    <CardTitle className="flex items-center gap-2">User Profile</CardTitle>
                     {!isProfileEditing && (
                         <Button variant="ghost" size="icon" onClick={() => setIsProfileEditing(true)}>
                             <Edit className="h-4 w-4" />
@@ -164,8 +172,7 @@ export default function EditUserPage() {
                 <CardContent className="space-y-4">
                     <div className="flex flex-col items-center text-center space-y-3">
                         <Avatar className="h-24 w-24">
-                            <AvatarImage asChild src={user.avatarUrl}><Image src={user.avatarUrl} alt={user.name} width={96} height={96} /></AvatarImage>
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                         </Avatar>
                     </div>
                      <div className="space-y-2">
@@ -191,6 +198,10 @@ export default function EditUserPage() {
                         ) : (
                             <p className="text-muted-foreground">{email}</p>
                         )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <p className="text-muted-foreground flex items-center gap-2"><Globe className="h-4 w-4" /> {user.country}</p>
                     </div>
                 </CardContent>
                 {isProfileEditing && (
@@ -236,7 +247,7 @@ export default function EditUserPage() {
                 <CardContent>
                     <Label htmlFor="balance">Total Balance (USD)</Label>
                     {isBalanceEditing ? (
-                        <Input id="balance" type="number" value={balance} onChange={(e) => setBalance(parseFloat(e.target.value))} className="h-12 text-base sm:text-xl font-bold" />
+                        <Input id="balance" type="number" value={balance} onChange={(e) => setBalance(parseFloat(e.target.value))} className="h-12 text-xl font-bold" />
                     ) : (
                         <p className="text-3xl font-bold">{formatCurrency(balance)}</p>
                     )}
@@ -280,10 +291,10 @@ export default function EditUserPage() {
                                         <TableCell>{tx.type}</TableCell>
                                         <TableCell className={cn(
                                             "text-right font-semibold",
-                                            tx.type === 'Deposit' ? 'text-accent' : 
+                                            tx.type === 'Deposit' || tx.type === 'Profit' ? 'text-accent' : 
                                             tx.type === 'Withdrawal' ? 'text-destructive' : ''
                                         )}>
-                                            {tx.type === 'Deposit' ? '+' : tx.type === 'Withdrawal' ? '-' : ''}{formatCurrency(tx.amount)}
+                                            {tx.type === 'Deposit' || tx.type === 'Profit' ? '+' : tx.type === 'Withdrawal' ? '-' : ''}{formatCurrency(tx.amount)}
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <Badge variant={getStatusVariant(tx.status)}>{tx.status}</Badge>
@@ -330,6 +341,7 @@ export default function EditUserPage() {
                                 <SelectItem value="Deposit">Deposit</SelectItem>
                                 <SelectItem value="Withdrawal">Withdrawal</SelectItem>
                                 <SelectItem value="Investment">Investment</SelectItem>
+                                <SelectItem value="Profit">Profit</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -381,5 +393,3 @@ export default function EditUserPage() {
     </div>
   );
 }
-
-

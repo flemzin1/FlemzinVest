@@ -1,11 +1,13 @@
 
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { transactionHistory, type Transaction } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
+import { type Transaction } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -13,6 +15,7 @@ const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style
 const getStatusVariant = (status: Transaction['status']) => {
   switch (status) {
     case 'Completed':
+    case 'Profit':
       return 'secondary';
     case 'Pending':
       return 'default';
@@ -47,10 +50,10 @@ function TransactionTable({ transactions }: { transactions: Transaction[] }) {
               <TableCell className="text-muted-foreground">{tx.details}</TableCell>
               <TableCell className={cn(
                 "text-right font-semibold",
-                tx.type === 'Deposit' ? 'text-accent' : 
+                tx.type === 'Deposit' || tx.type === 'Profit' ? 'text-accent' : 
                 tx.type === 'Withdrawal' ? 'text-destructive' : ''
               )}>
-                {tx.type === 'Deposit' ? '+' : tx.type === 'Withdrawal' ? '-' : ''}{formatCurrency(tx.amount)}
+                {tx.type === 'Deposit' || tx.type === 'Profit' ? '+' : tx.type === 'Withdrawal' ? '-' : ''}{formatCurrency(tx.amount)}
               </TableCell>
               <TableCell className="text-center">
                 <Badge variant={getStatusVariant(tx.status)} className="capitalize">
@@ -66,9 +69,12 @@ function TransactionTable({ transactions }: { transactions: Transaction[] }) {
 }
 
 export default function TransactionsPage() {
-  const deposits = transactionHistory.filter(tx => tx.type === 'Deposit');
-  const withdrawals = transactionHistory.filter(tx => tx.type === 'Withdrawal');
-  const investments = transactionHistory.filter(tx => tx.type === 'Investment');
+  const user = useUser();
+  const userTransactions = user?.transactions || [];
+
+  const deposits = userTransactions.filter(tx => tx.type === 'Deposit');
+  const withdrawals = userTransactions.filter(tx => tx.type === 'Withdrawal');
+  const investments = userTransactions.filter(tx => tx.type === 'Investment' || tx.type === 'Profit');
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
@@ -83,10 +89,10 @@ export default function TransactionsPage() {
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="deposits">Deposits</TabsTrigger>
               <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-              <TabsTrigger value="investments">Investments</TabsTrigger>
+              <TabsTrigger value="investments">Investments & Profits</TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-4">
-              <TransactionTable transactions={transactionHistory} />
+              <TransactionTable transactions={userTransactions} />
             </TabsContent>
             <TabsContent value="deposits" className="mt-4">
               <TransactionTable transactions={deposits} />

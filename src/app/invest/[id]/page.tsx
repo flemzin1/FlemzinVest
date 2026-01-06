@@ -3,7 +3,8 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { investmentPlans, availableBalance } from "@/lib/data";
+import { investmentPlans } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { ArrowLeft, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { notFound } from 'next/navigation';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
@@ -19,6 +21,7 @@ export default function InvestmentDetailPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
+  const user = useUser();
   const { id } = params;
 
   const plan = investmentPlans.find((p) => p.id === id);
@@ -29,7 +32,11 @@ export default function InvestmentDetailPage() {
     return notFound();
   }
 
+  const isButtonDisabled = user?.status !== 'Active';
+
   const handleConfirmInvestment = () => {
+    if (!user || user.status !== 'Active') return;
+
     const investmentAmount = parseFloat(amount);
     if (isNaN(investmentAmount) || investmentAmount <= 0) {
       toast({
@@ -39,11 +46,11 @@ export default function InvestmentDetailPage() {
       });
       return;
     }
-    if (investmentAmount > availableBalance) {
+    if (investmentAmount > user.availableBalance) {
       toast({
         variant: "destructive",
         title: "Insufficient Funds",
-        description: `Your available balance is ${formatCurrency(availableBalance)}.`,
+        description: `Your available balance is ${formatCurrency(user.availableBalance)}.`,
       });
       return;
     }
@@ -103,7 +110,7 @@ export default function InvestmentDetailPage() {
             <CardContent className="space-y-4">
                 <div className="p-4 rounded-lg border bg-secondary/30">
                     <p className="text-sm text-muted-foreground">Available Balance</p>
-                    <p className="text-2xl font-bold">{formatCurrency(availableBalance)}</p>
+                    <p className="text-2xl font-bold">{formatCurrency(user?.availableBalance ?? 0)}</p>
                 </div>
                 <div>
                     <Label htmlFor="amount" className="text-base">Investment Amount (USD)</Label>
@@ -114,13 +121,31 @@ export default function InvestmentDetailPage() {
                         value={amount} 
                         onChange={(e) => setAmount(e.target.value)}
                         className="h-12 text-lg mt-2"
+                        disabled={isButtonDisabled}
                     />
                 </div>
             </CardContent>
             <CardFooter>
-                 <Button onClick={handleConfirmInvestment} className="w-full h-12 text-lg">
-                    Confirm Investment
-                </Button>
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="w-full">
+                                <Button
+                                    onClick={handleConfirmInvestment}
+                                    className="w-full h-12 text-lg"
+                                    disabled={isButtonDisabled}
+                                >
+                                    Confirm Investment
+                                </Button>
+                            </div>
+                        </TooltipTrigger>
+                        {isButtonDisabled && (
+                            <TooltipContent>
+                                <p>Your account is not active. Please contact support.</p>
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                 </TooltipProvider>
             </CardFooter>
         </Card>
       </div>

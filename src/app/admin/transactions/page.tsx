@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { transactionHistory, type Transaction } from "@/lib/data";
+import { allTransactions, type Transaction } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -66,9 +66,9 @@ function TransactionTable({ transactions }: { transactions: Transaction[] }) {
 }
 
 export default function AdminTransactionsPage() {
-  const deposits = transactionHistory.filter(tx => tx.type === 'Deposit');
-  const withdrawals = transactionHistory.filter(tx => tx.type === 'Withdrawal');
-  const investments = transactionHistory.filter(tx => tx.type === 'Investment');
+  const deposits = allTransactions.filter(tx => tx.type === 'Deposit');
+  const withdrawals = allTransactions.filter(tx => tx.type === 'Withdrawal');
+  const investments = allTransactions.filter(tx => tx.type === 'Investment');
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
@@ -86,7 +86,7 @@ export default function AdminTransactionsPage() {
               <TabsTrigger value="investments">Investments</TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-4">
-              <TransactionTable transactions={transactionHistory} />
+              <TransactionTable transactions={allTransactions} />
             </TabsContent>
             <TabsContent value="deposits" className="mt-4">
               <TransactionTable transactions={deposits} />

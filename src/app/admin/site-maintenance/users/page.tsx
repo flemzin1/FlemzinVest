@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,6 +75,7 @@ export default function UserManagementPage() {
                         <TableRow>
                             <TableHead>User</TableHead>
                             <TableHead className="hidden md:table-cell">Email</TableHead>
+                            <TableHead className="hidden lg:table-cell">Country</TableHead>
                             <TableHead className="hidden sm:table-cell">Total Balance</TableHead>
                             <TableHead className="text-center">Status</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -85,10 +87,7 @@ export default function UserManagementPage() {
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage asChild src={user.avatarUrl}>
-                                                <Image src={user.avatarUrl} alt={user.name} width={36} height={36} />
-                                            </AvatarImage>
-                                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                         </Avatar>
                                         <div className="grid gap-0.5">
                                             <p className="font-medium">{user.name}</p>
@@ -97,6 +96,7 @@ export default function UserManagementPage() {
                                     </div>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">{user.email}</TableCell>
+                                <TableCell className="hidden lg:table-cell">{user.country}</TableCell>
                                 <TableCell className="hidden sm:table-cell font-mono">{formatCurrency(user.totalBalance)}</TableCell>
                                 <TableCell className="text-center">
                                     <Badge variant={getStatusVariant(user.status)}>{user.status}</Badge>

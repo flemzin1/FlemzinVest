@@ -83,8 +83,7 @@ export default function UserSettingsPage() {
       <div className="max-w-3xl mx-auto space-y-8">
          <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-                <AvatarImage asChild src={user.avatarUrl}><Image src={user.avatarUrl} alt={user.name} width={64} height={64} /></AvatarImage>
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>

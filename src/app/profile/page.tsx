@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { userProfile, availableBalance, totalBalance } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
 import { Edit3, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,14 +15,20 @@ import { useRouter } from "next/navigation";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
-
 export default function ProfilePage() {
   const router = useRouter();
+  const user = useUser();
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
     router.push('/');
   };
+
+  if (!user) {
+    // Optional: Render a loading state or redirect
+    return <div className="p-4 md:p-8">Loading profile...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
@@ -39,15 +45,13 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="flex flex-col items-center text-center space-y-4">
              <Avatar className="h-24 w-24">
-                <AvatarImage asChild src={userProfile.avatarUrl}>
-                    <Image src={userProfile.avatarUrl} alt="User Avatar" width={96} height={96} />
-                </AvatarImage>
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-                <h2 className="text-2xl font-bold">{userProfile.name}</h2>
-                <p className="text-muted-foreground">{userProfile.username}</p>
-                <p className="text-sm text-muted-foreground">{userProfile.email}</p>
+                <h2 className="text-2xl font-bold">{user.name}</h2>
+                <p className="text-muted-foreground">{user.username}</p>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-sm text-muted-foreground">{user.country}</p>
             </div>
           </CardContent>
         </Card>
@@ -59,11 +63,11 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 gap-2 sm:gap-4 text-center">
                     <div className="p-4 rounded-lg border bg-secondary/30">
                         <p className="text-xs sm:text-sm text-muted-foreground">Available Balance</p>
-                        <p className="font-bold text-base sm:text-xl lg:text-2xl">{formatCurrency(availableBalance)}</p>
+                        <p className="font-bold text-base sm:text-xl lg:text-2xl">{formatCurrency(user.availableBalance)}</p>
                     </div>
                     <div className="p-4 rounded-lg border bg-secondary/30">
                         <p className="text-xs sm:text-sm text-muted-foreground">Total Balance</p>
-                        <p className="font-bold text-base sm:text-xl lg:text-2xl">{formatCurrency(totalBalance)}</p>
+                        <p className="font-bold text-base sm:text-xl lg:text-2xl">{formatCurrency(user.totalBalance)}</p>
                     </div>
                 </div>
                 <Button asChild variant="outline" className="w-full">

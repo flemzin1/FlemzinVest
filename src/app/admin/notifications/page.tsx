@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { adminNotifications as initialNotifications, type Notification } from "@/lib/data";
+import { allAdminNotifications as initialNotifications, type Notification } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { CheckCheck, MailOpen } from "lucide-react";
 

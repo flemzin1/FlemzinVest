@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { BarChart3, Bell, Headset, User, Menu, X } from "lucide-react";
+import { BarChart3, Bell, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useUser } from "@/hooks/use-user";
 
 const desktopNavItems = [
     { href: "/dashboard", label: "Dashboard" },
@@ -67,7 +68,7 @@ function DesktopNav({ isAuthenticated }: { isAuthenticated: boolean }) {
 }
 
 export function Header({ isAuthenticated }: { isAuthenticated: boolean }) {
-  const [hasUnread, setHasUnread] = useState(true);
+  const user = useUser();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,9 +79,11 @@ export function Header({ isAuthenticated }: { isAuthenticated: boolean }) {
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userEmail');
+    localStorage.removeItem('user');
     router.push('/');
   };
+
+  const hasUnreadNotifications = user?.notifications.some(n => !n.read) ?? false;
   
   if (!isMounted) {
     return (
@@ -115,12 +118,6 @@ export function Header({ isAuthenticated }: { isAuthenticated: boolean }) {
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
                 <>
-                    <Button asChild variant="ghost" size="icon">
-                        <Link href="/support">
-                            <Headset className="h-5 w-5" />
-                            <span className="sr-only">Support Chat</span>
-                        </Link>
-                    </Button>
                     <div className="relative">
                         <Button asChild variant="ghost" size="icon">
                             <Link href="/notifications">
@@ -128,7 +125,7 @@ export function Header({ isAuthenticated }: { isAuthenticated: boolean }) {
                                 <span className="sr-only">Notifications</span>
                             </Link>
                         </Button>
-                        {hasUnread && (
+                        {hasUnreadNotifications && (
                             <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
                         )}
                     </div>

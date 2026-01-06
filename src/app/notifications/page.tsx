@@ -1,23 +1,33 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { notifications as initialNotifications, type Notification } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
+import { type Notification } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { CheckCheck, MailOpen } from "lucide-react";
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const user = useUser();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      setNotifications(user.notifications);
+    }
+  }, [user]);
 
   const markAsRead = (id: string) => {
     setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+    // In a real app, you'd also update the user object in localStorage/backend
   };
 
   const markAllAsRead = () => {
     setNotifications(notifications.map(n => ({ ...n, read: true })));
+    // In a real app, you'd also update the user object in localStorage/backend
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -59,7 +69,7 @@ export default function NotificationsPage() {
                         notification.read ? "text-muted-foreground cursor-default" : "text-primary hover:text-primary"
                       )}
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent dialog from opening twice
+                        e.stopPropagation();
                         if (!notification.read) {
                           markAsRead(notification.id);
                         }

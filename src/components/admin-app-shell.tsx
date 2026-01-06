@@ -6,19 +6,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
-    Users,
-    CreditCard,
     Settings,
     PanelLeft,
     User,
     Headset,
     Bell,
     Hourglass,
-    Landmark,
-    TrendingUp,
-    Wrench,
-    Mail,
     Wallet,
+    Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,7 +51,7 @@ function AdminHeader({ isAuthenticated }: { isAuthenticated: boolean }) {
 
     const handleLogout = () => {
         localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('userEmail');
+        localStorage.removeItem('user');
         router.push('/login');
     };
 
@@ -198,7 +193,14 @@ export function AdminAppShell({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         setIsMounted(true);
         const authStatus = localStorage.getItem('isAuthenticated') === 'true';
-        const userEmail = localStorage.getItem('userEmail');
+        let userEmail: string | null = null;
+        try {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                userEmail = JSON.parse(userStr).email;
+            }
+        } catch (e) { console.error("Could not parse user from LS");}
+
         
         if (!authStatus || userEmail?.toLowerCase() !== 'admin@gmail.com') {
             router.push('/login');

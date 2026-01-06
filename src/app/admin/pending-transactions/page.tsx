@@ -3,14 +3,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { transactionHistory, type Transaction } from "@/lib/data";
+import { allTransactions } from "@/lib/data";
 import { PendingTransactionTable } from "@/components/admin/pending-transaction-table";
 
 export default function PendingTransactionsPage() {
-  const allPending = transactionHistory.filter(tx => tx.status === 'Pending');
-  const pendingDeposits = transactionHistory.filter(tx => tx.type === 'Deposit' && tx.status === 'Pending');
-  const pendingWithdrawals = transactionHistory.filter(tx => tx.type === 'Withdrawal' && tx.status === 'Pending');
-  const pendingInvestments = transactionHistory.filter(tx => tx.type === 'Investment' && tx.status === 'Pending');
+  const allPending = allTransactions.filter(tx => tx.status === 'Pending');
+  const pendingDeposits = allTransactions.filter(tx => tx.type === 'Deposit' && tx.status === 'Pending');
+  const pendingWithdrawals = allTransactions.filter(tx => tx.type === 'Withdrawal' && tx.status === 'Pending');
+  const pendingInvestments = allTransactions.filter(tx => tx.type === 'Investment' && tx.status === 'Pending');
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">

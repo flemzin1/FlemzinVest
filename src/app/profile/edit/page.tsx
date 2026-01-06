@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { userProfile } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -15,18 +15,30 @@ import { ArrowLeft } from "lucide-react";
 export default function EditProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
+  const user = useUser();
   
-  const [name, setName] = useState(userProfile.name);
-  const [username, setUsername] = useState(userProfile.username);
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setUsername(user.username);
+    }
+  }, [user]);
 
   const handleSaveChanges = () => {
-    // Here you would typically handle the API call to update the profile
+    // In a real app, you'd update the user object and save it back to localStorage/backend
     toast({
       title: "Profile Updated",
       description: "Your changes have been saved successfully.",
     });
     router.push("/profile");
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8">
@@ -54,7 +66,7 @@ export default function EditProfilePage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" value={userProfile.email} disabled />
+                    <Input id="email" value={user.email} disabled />
                      <p className="text-xs text-muted-foreground">
                         Your email address cannot be changed.
                     </p>

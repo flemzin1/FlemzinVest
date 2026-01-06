@@ -8,21 +8,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useState } from 'react';
+import { users } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [investorCode, setInvestorCode] = useState('');
 
   const handleLogin = () => {
-    // This is a simulation. In a real app, you'd validate credentials.
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('userEmail', email);
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.investorCode === investorCode);
 
-    if (email.toLowerCase() === 'admin@gmail.com') {
-      router.push('/admin/dashboard');
+    if (user) {
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(user));
+
+      if (user.email.toLowerCase() === 'admin@gmail.com') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } else {
-      router.push('/dashboard');
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: 'Invalid email or investor code.',
+      });
     }
   };
 
@@ -33,7 +45,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account.
+            Enter your email and investor code to access your account.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -42,8 +54,8 @@ export default function LoginPage() {
             <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Label htmlFor="investor-code">Investor Code</Label>
+            <Input id="investor-code" type="password" required value={investorCode} onChange={(e) => setInvestorCode(e.target.value)} />
           </div>
         </CardContent>
         <CardFooter className="flex-col items-start gap-4">

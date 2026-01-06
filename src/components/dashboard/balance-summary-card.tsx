@@ -6,16 +6,18 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Wallet, ChevronDown } from "lucide-react";
-import { totalBalance, availableBalance } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
 
 const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
-export function BalanceSummaryCard({ showAddMoneyButton = true, transactionHistoryHref = "/transactions" }: { showAddMoneyButton?: boolean, transactionHistoryHref?: string }) {
+export function BalanceSummaryCard({ showAddMoneyButton = true, transactionHistoryHref = "/transactions", isPublic = false }: { showAddMoneyButton?: boolean, transactionHistoryHref?: string, isPublic?: boolean }) {
   const [isVisible, setIsVisible] = useState(true);
-
+  const user = useUser();
   const toggleVisibility = () => setIsVisible(!isVisible);
+
+  const displayAvailableBalance = isPublic ? 0 : user?.availableBalance ?? 0;
+  const displayTotalBalance = isPublic ? 0 : user?.totalBalance ?? 0;
 
   return (
     <Card className="shadow-md border-border">
@@ -36,7 +38,7 @@ export function BalanceSummaryCard({ showAddMoneyButton = true, transactionHisto
               </div>
               <CollapsibleTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer group">
-                  <p className="text-xl sm:text-2xl font-bold">{isVisible ? formatCurrency(availableBalance) : '****.**'}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{isVisible ? formatCurrency(displayAvailableBalance) : '****.**'}</p>
                   <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                 </div>
               </CollapsibleTrigger>
@@ -44,7 +46,7 @@ export function BalanceSummaryCard({ showAddMoneyButton = true, transactionHisto
             <CollapsibleContent className="pt-4">
                 <div className="pl-1">
                     <p className="text-xs text-muted-foreground">Total Balance</p>
-                    <p className="text-base sm:text-lg font-semibold">{isVisible ? formatCurrency(totalBalance) : '****.**'}</p>
+                    <p className="text-base sm:text-lg font-semibold">{isVisible ? formatCurrency(displayTotalBalance) : '****.**'}</p>
                 </div>
             </CollapsibleContent>
           </Collapsible>

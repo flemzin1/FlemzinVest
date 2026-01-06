@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Header } from "@/components/header";
@@ -13,7 +14,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { users } from "@/lib/data";
+import { useUser } from "@/hooks/use-user";
 import { Footer } from "./footer";
 
 const mobileMenuItems = [
@@ -24,49 +25,43 @@ const mobileMenuItems = [
     { href: "/profile", icon: User, label: "Profile" },
 ];
 
-const publicPages = ['/', '/about', '/contact', '/faq', '/offers', '/legal', '/careers'];
+const publicPages = ['/', '/about', '/contact', '/faq', '/offers', '/legal', '/careers', '/#how-it-works'];
 const authPages = ['/login', '/signup'];
 
 
 function AppShellContent({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isPublicPage, setIsPublicPage] = useState(true);
-    const [isAuthPage, setIsAuthPage] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
 
+    const isPublicPage = publicPages.some(page => pathname === page || (page.includes('/#') && pathname === '/'));
+    const isAuthPage = authPages.includes(pathname);
+    const isAdminPage = pathname.startsWith('/admin');
+
     useEffect(() => {
+        setIsMounted(true);
         const authStatus = localStorage.getItem('isAuthenticated') === 'true';
-        const userEmail = localStorage.getItem('userEmail');
+        let userEmail: string | null = null;
+        try {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                userEmail = JSON.parse(userStr).email;
+            }
+        } catch (e) {
+            console.error("Failed to parse user from local storage");
+        }
+        
         const isAdmin = userEmail?.toLowerCase() === 'admin@gmail.com';
         
-        const currentUser = users.find(u => u.email === userEmail);
-        const isBanned = currentUser ? localStorage.getItem(`banned_${currentUser.id}`) === 'true' : false;
-
-        if (authStatus && isBanned) {
-            localStorage.removeItem('isAuthenticated');
-            localStorage.removeItem('userEmail');
-            router.push('/login');
-            return;
-        }
-
         setIsAuthenticated(authStatus);
         
-        const currentIsPublic = publicPages.includes(pathname);
-        const currentIsAuth = authPages.includes(pathname);
-        setIsPublicPage(currentIsPublic);
-        setIsAuthPage(currentIsAuth);
-
-        const isAdminPage = pathname.startsWith('/admin');
-        
         if (isAdminPage) {
-            setIsMounted(true);
             return;
         };
 
         if (authStatus) {
-            if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
+            if (isAuthPage) { // User is logged in but on login/signup page
                 if (isAdmin) {
                     router.push('/admin/dashboard');
                 } else {
@@ -74,31 +69,32 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
                 }
                 return;
             }
-        } else {
-            if (!currentIsPublic && !currentIsAuth) {
+        } else { // User is not logged in
+            if (!isPublicPage && !isAuthPage) {
                 router.push('/login');
                 return;
             }
         }
-        setIsMounted(true);
-    }, [pathname, router]);
+    }, [pathname, router, isAuthPage, isPublicPage, isAdminPage]);
     
-    if (pathname.startsWith('/admin')) {
+    if (isAdminPage) {
         return <>{children}</>;
     }
     
-    // Render a single, consistent layout. Visibility is controlled by CSS.
-    // This prevents hydration errors and layout shifts.
+    // Determine if the footer should be shown.
+    // Render a static shell during server-side rendering and initial client-side mount.
+    const shouldShowFooter = isPublicPage && (!isMounted || !isAuthenticated);
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
             <div className="flex-1">
                 <Header isAuthenticated={isAuthenticated} />
-                <main className={cn("pt-16 md:pb-0", isMounted ? "pb-24" : "pb-0")}>
-                    {isMounted && children}
+                 <main className={cn("pt-16", isAuthenticated ? "pb-24 md:pb-0" : "pb-0")}>
+                    {children}
                 </main>
             </div>
-            <MobileBottomNav className={cn({ 'hidden': !isMounted || isPublicPage || isAuthPage || !isAuthenticated })} />
-            <Footer className={cn({ 'hidden': !isMounted || !isPublicPage || isAuthenticated })} />
+            {isAuthenticated && <MobileBottomNav className={cn({ 'hidden': isPublicPage || isAuthPage })} />}
+            {shouldShowFooter && <Footer />}
         </div>
     );
 }
@@ -112,7 +108,7 @@ function MobileBottomNav({ className }: { className?: string }) {
     const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
-
+    
     const checkActivePath = (href: string) => {
       if (!mounted) return false;
       if (href === "/dashboard") return pathname === href;
@@ -124,27 +120,28 @@ function MobileBottomNav({ className }: { className?: string }) {
             <div className="grid h-full grid-cols-5 mx-auto font-medium">
                 {mobileMenuItems.map((item) => {
                     const isActive = checkActivePath(item.href);
+
                     return (
                         <Link
-                          href={item.href}
-                          key={item.label}
-                          className="flex flex-col items-center justify-center group"
+                            href={item.href}
+                            key={item.label}
+                            className={cn("flex flex-col items-center justify-center group")}
                         >
-                          <div
-                            className={cn(
-                              "relative flex flex-col items-center transition-all duration-300",
-                              isActive
-                                ? "h-20 w-20 justify-center p-3 mx-auto -translate-y-8 bg-accent text-accent-foreground rounded-full shadow-[0_-8px_20px_-5px_hsl(var(--accent)/0.5)]"
-                                : "text-muted-foreground group-hover:text-foreground h-16 w-16 justify-center"
-                            )}
-                          >
-                            <item.icon className="h-6 w-6 mb-1" />
-                            <span className="text-xs text-center px-1">
-                              {item.label}
-                            </span>
-                          </div>
+                            <div
+                                className={cn(
+                                "relative flex flex-col items-center justify-center transition-all duration-300 w-20 h-20 p-2",
+                                isActive
+                                    ? "-translate-y-8 bg-accent text-accent-foreground rounded-full shadow-[0_-8px_20px_-5px_hsl(var(--accent)/0.5)]"
+                                    : "text-muted-foreground group-hover:text-foreground"
+                                )}
+                            >
+                                <item.icon className="h-6 w-6 mb-1" />
+                                <span className="text-xs text-center px-1">
+                                {item.label}
+                                </span>
+                            </div>
                         </Link>
-                    )
+                    );
                 })}
             </div>
       </div>
