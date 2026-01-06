@@ -2,7 +2,7 @@
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { type Transaction } from "@/lib/data";
 import { useMemo } from "react";
@@ -21,13 +21,17 @@ const chartConfig = {
   profit: {
     label: "Profit",
     color: "hsl(var(--chart-2))", // Green
+  },
+  withdrawal: {
+    label: "Withdrawal",
+    color: "hsl(var(--destructive))", // Red
   }
 } satisfies ChartConfig;
 
 type ChartDataPoint = {
   date: string;
   balance: number;
-  transactionType: 'Deposit' | 'Profit' | null;
+  transactionType: 'Deposit' | 'Profit' | 'Withdrawal' | null;
 };
 
 const generateChartData = (transactions: Transaction[]): ChartDataPoint[] => {
@@ -67,7 +71,6 @@ const generateChartData = (transactions: Transaction[]): ChartDataPoint[] => {
   const data: ChartDataPoint[] = [];
   let currentBalance = 0;
   
-  // Calculate balance up to the start date
   const balanceBeforeStartDate = completedTx
       .filter(tx => new Date(tx.date) < startDate)
       .reduce((acc, tx) => {
@@ -82,29 +85,28 @@ const generateChartData = (transactions: Transaction[]): ChartDataPoint[] => {
       const formattedDate = format(day, 'yyyy-MM-dd');
       const dailyTransactions = completedTx.filter(tx => format(new Date(tx.date), 'yyyy-MM-dd') === formattedDate);
       
-      let dailyTransactionType: 'Deposit' | 'Profit' | null = null;
+      let dailyTransactionType: 'Deposit' | 'Profit' | 'Withdrawal' | null = null;
 
       if (dailyTransactions.length > 0) {
           dailyTransactions.forEach(tx => {
               if (tx.type === 'Deposit' || tx.type === 'Profit') {
                   currentBalance += tx.amount;
-                  // Prioritize showing profit dot if both happen on the same day
                   if (tx.type === 'Profit') dailyTransactionType = 'Profit';
                   else if (dailyTransactionType !== 'Profit') dailyTransactionType = 'Deposit';
               } else if (tx.type === 'Withdrawal') {
                   currentBalance -= tx.amount;
+                  dailyTransactionType = 'Withdrawal';
               }
           });
       }
       
       data.push({
           date: format(day, 'MMM d'),
-          balance: currentBalance,
+          balance: currentBalance > 0 ? currentBalance : 0,
           transactionType: dailyTransactionType,
       });
   });
   
-  // Special case for a single transaction to show a ramp-up
   if (completedTx.length === 1) {
     const singleTxDate = new Date(completedTx[0].date);
     const dayBefore = subDays(singleTxDate, 1);
@@ -122,10 +124,13 @@ const CustomDot = (props: any) => {
     const { cx, cy, payload } = props;
     
     if (payload.transactionType === 'Deposit') {
-        return <circle cx={cx} cy={cy} r={5} stroke={chartConfig.deposit.color} strokeWidth={2} fill={"#fff"} />;
+        return <circle cx={cx} cy={cy} r={5} stroke={chartConfig.deposit.color} strokeWidth={2} fill={chartConfig.deposit.color} />;
     }
     if (payload.transactionType === 'Profit') {
-        return <circle cx={cx} cy={cy} r={5} stroke={chartConfig.profit.color} strokeWidth={2} fill={"#fff"} />;
+        return <circle cx={cx} cy={cy} r={5} stroke={chartConfig.profit.color} strokeWidth={2} fill={chartConfig.profit.color} />;
+    }
+    if (payload.transactionType === 'Withdrawal') {
+        return <circle cx={cx} cy={cy} r={5} stroke={chartConfig.withdrawal.color} strokeWidth={2} fill={chartConfig.withdrawal.color} />;
     }
     return null;
 };
@@ -134,6 +139,17 @@ const CustomDot = (props: any) => {
 export function InvestmentChart() {
   const user = useUser();
   const accountActivityData = useMemo(() => generateChartData(user?.transactions || []), [user]);
+
+  const hasDeposits = useMemo(() => user?.transactions.some(tx => tx.type === 'Deposit'), [user]);
+  const hasProfits = useMemo(() => user?.transactions.some(tx => tx.type === 'Profit'), [user]);
+  const hasWithdrawals = useMemo(() => user?.transactions.some(tx => tx.type === 'Withdrawal'), [user]);
+
+  const LegendItem = ({ color, label }: { color: string, label: string }) => (
+    <div className="flex items-center gap-2">
+      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+      <span className="text-sm text-muted-foreground">{label}</span>
+    </div>
+  );
 
   return (
     <Card className="shadow-md border-border">
@@ -183,6 +199,13 @@ export function InvestmentChart() {
           </LineChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-4">
+            {hasDeposits && <LegendItem color={chartConfig.deposit.color} label="Deposit" />}
+            {hasProfits && <LegendItem color={chartConfig.profit.color} label="Investment Payout" />}
+            {hasWithdrawals && <LegendItem color={chartConfig.withdrawal.color} label="Withdrawal" />}
+        </div>
+      </CardFooter>
     </Card>
   );
 }
