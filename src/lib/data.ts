@@ -29,7 +29,6 @@ export type User = {
   username: string;
   email: string;
   investorCode: string;
-  avatarUrl: string;
   joinDate: string;
   country: string;
   totalBalance: number;
@@ -69,7 +68,6 @@ export const users: User[] = [
     username: '@admin',
     email: 'admin@gmail.com',
     investorCode: 'admin123',
-    avatarUrl: '',
     joinDate: '2023-01-01',
     country: 'USA',
     totalBalance: 0,
@@ -113,7 +111,6 @@ export const users: User[] = [
     username: '@john.doe', 
     email: 'john.doe@example.com', 
     investorCode: 'user123',
-    avatarUrl: '', 
     joinDate: '2023-10-01', 
     country: 'United States',
     totalBalance: 87456.21,
@@ -149,7 +146,6 @@ export const users: User[] = [
     username: '@jane.smith', 
     email: 'jane.smith@example.com', 
     investorCode: 'jane123',
-    avatarUrl: '', 
     joinDate: '2023-09-15', 
     country: 'Canada',
     totalBalance: 123890.50, 
@@ -174,7 +170,6 @@ export const users: User[] = [
     username: '@alice.j', 
     email: 'alice.j@example.com', 
     investorCode: 'alice123',
-    avatarUrl: '', 
     joinDate: '2023-10-28', 
     country: 'United Kingdom',
     totalBalance: 5200.00, 
@@ -199,7 +194,6 @@ export const users: User[] = [
     username: '@rob.brown', 
     email: 'rob.brown@example.com', 
     investorCode: 'rob123',
-    avatarUrl: '', 
     joinDate: '2023-05-20', 
     country: 'Australia',
     totalBalance: 25000.00, 
@@ -225,7 +219,6 @@ export const users: User[] = [
     username: '@emily.d', 
     email: 'emily.d@example.com', 
     investorCode: 'emily123',
-    avatarUrl: '', 
     joinDate: '2023-10-10', 
     country: 'Germany',
     totalBalance: 76543.21, 
@@ -242,7 +235,6 @@ export const users: User[] = [
     username: 'Ricardo12',
     email: 'Ricardo@gmail.com',
     investorCode: '56729419AsGH2',
-    avatarUrl: '',
     joinDate: '2023-11-05',
     country: 'Brazil',
     totalBalance: 18000,
@@ -262,7 +254,6 @@ export const users: User[] = [
     username: 'siewlean1',
     email: 'lerwame@gmail.com',
     investorCode: '5672VB569AsGH2',
-    avatarUrl: '',
     joinDate: '2025-12-26',
     country: 'Malaysia',
     totalBalance: 13000,
@@ -276,6 +267,22 @@ export const users: User[] = [
         { id: 'notif-siewlean-1', title: 'Welcome to InvestView!', message: 'Your account has been successfully created.', timestamp: 'On 26 Dec 2025', read: false },
         { id: 'notif-siewlean-2', title: 'Deposit Confirmed', message: 'Your deposit of 500 has been credited to your account.', timestamp: 'On 26 Dec 2025', read: false },
         { id: 'notif-siewlean-3', title: 'Investment Payout', message: 'An investment payout of 12,500 has been credited to your account.', timestamp: 'On 05 Jan 2026', read: false }
+    ]
+  },
+  {
+    id: 'user8',
+    name: 'CELIA PRUCE',
+    username: 'Celiapruce',
+    email: 'celita2.celia@gmail.com',
+    investorCode: '5672VC863AsGH2',
+    joinDate: '2026-01-11',
+    country: 'France',
+    totalBalance: 0,
+    availableBalance: 0,
+    status: 'Pending',
+    transactions: [],
+    notifications: [
+        { id: 'notif-celia-1', title: 'Account Created Successfully', message: 'Welcome to InvestView! Your account is now ready. Please deposit funds to start investing.', timestamp: 'Just now', read: false }
     ]
   }
 ];
